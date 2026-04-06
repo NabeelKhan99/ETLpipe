@@ -1,13 +1,20 @@
+import logging
 from ingest import IngestEngine
 from transform import TransformEngine
 from load import LoadEngine
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
+                    handlers=[ logging.FileHandler("etl_pipeline.log"),
+                        logging.StreamHandler()]
+                    )
+logger = logging.getLogger(__name__)
 
 def run_pipeline():
     """
     Orchestrates the ETL process for Manitoba Health RHA data.
     Separates concerns between Ingestion, Transformation, and Loading.
     """
-    print("Initializing ETL Pipeline...")
+    logger.info("Initializing ETL Pipeline...")
     
     # Phase 1: Ingestion
     # Responsible for API communication and raw data retrieval

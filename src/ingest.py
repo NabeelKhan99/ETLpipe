@@ -1,4 +1,7 @@
 import requests
+import logging
+
+
 
 class IngestEngine:
     def __init__(self):
