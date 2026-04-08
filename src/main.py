@@ -1,10 +1,16 @@
 import logging
+from pathlib import Path
+from dotenv import load_dotenv
+import os # Added to pull credentials safely later
 from ingest import IngestEngine
 from transform import TransformEngine
 from load import LoadEngine
 
+
+env_path = Path(__file__).resolve().parent.parent/ '.env'
+load_dotenv(dotenv_path=env_path)
+
 # Centralized Logging Configuration
-# This ensures all modules reporting to 'ETL_Orchestrator' use the same format and file
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -16,7 +22,18 @@ logging.basicConfig(
 
 logger = logging.getLogger("ETL_Orchestrator")
 
+load_dotenv()
+
+# Define your connection string here
+# For local testing:
+DB_URL = os.getenv("DATABASE_URL")  # Pulling from environment variable for security
+
 def run_pipeline():
+
+    if not DB_URL:
+        logger.error("CRITICAL: DATABASE_URL not found. Check your .env file!")
+        return
+
     """
     Main entry point for the ETL Pipeline.
     Manages the flow between Ingest, Transform, and Load engines.
@@ -39,7 +56,6 @@ def run_pipeline():
 
     # Phase 2: Transformation
     try:
-        # Note: Calling as a static method if defined as @staticmethod in transform.py
         processed_df = TransformEngine.clean_data(raw_data)
         
         if processed_df is None or processed_df.empty:
@@ -53,8 +69,9 @@ def run_pipeline():
 
     # Phase 3: Loading
     try:
-        loader = LoadEngine()
-        load_success = loader.save_to_sql(processed_df)
+        # Pass the connection string to the loader
+        loader = LoadEngine(DB_URL)
+        load_success = loader.save_to_db(processed_df)
         
         if load_success:
             logger.info("Load successful: Data persisted to destination database.")

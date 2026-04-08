@@ -31,6 +31,10 @@ class TransformEngine:
         
             if 'rhaname' in df.columns:
                 df['rhaname'] = df['rhaname'].str.strip()
+            
+
+            columns_to_keep = ['objectid', 'rhacode', 'rhaname', 'rhaarea', 'landarea', 'water_area']
+            df = df[columns_to_keep]
 
             logger.info("Transformation successful: DataFrame validated.")
         
