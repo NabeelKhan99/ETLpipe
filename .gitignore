@@ -1,0 +1,7 @@
+__pycache__/
+extra/
+*.log
+*.sql
+.vscode/
+*.db
+*.env

@@ -1,0 +1,32 @@
+name: Manitoba Health ETL POC
+
+on:
+  schedule:
+    # Runs at 00:00 on January 1st every year
+    - cron: '0 0 1 1 *' 
+  workflow_dispatch:      
+    # This allows you to trigger the pipeline manually from the GitHub UI
+
+jobs:
+  run-etl:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install pandas requests sqlalchemy psycopg2-binary python-dotenv
+
+      - name: Execute Pipeline
+        env:
+          # GitHub will inject your Neon secret here securely
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          cd src
+          python main.py
