@@ -32,7 +32,7 @@ def run_pipeline():
 
     if not DB_URL:
         logger.error("CRITICAL: DATABASE_URL not found. Check your .env file!")
-        return
+        raise ValueError("DATABASE_URL not set in environment variables.")
 
     """
     Main entry point for the ETL Pipeline.
